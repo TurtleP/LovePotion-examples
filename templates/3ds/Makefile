@@ -50,24 +50,6 @@ APP_DESCRIPTION := LOVE for 3DS
 ICON            := icon.png
 
 #---------------------------------------------------------------------------------
-# cia variables
-#
-# BANNER_IMAGE: the banner must be a 256x128px png
-# BANNER_AUDIO: audio must be wav or ogg and ~3 seconds long maximum
-# UNIQUE_ID   : a hex number, must be unique so it does not overwrite other apps
-#               keep the leading 0x part, only change the last four numbers
-# PRODUCT_CODE: change the last four digits, must also be unique (?)
-#---------------------------------------------------------------------------------
-
-RSF_PATH        := cia/info.rsf
-BANNER_AUDIO    := cia/audio.wav
-BANNER_IMAGE    := cia/banner.png
-
-ICON_FLAGS      := nosavebackups,visible
-UNIQUE_ID       := 0x1043 # must be unique!
-PRODUCT_CODE    := CTR-H-LOVE # change this too
-
-#---------------------------------------------------------------------------------
 # build options
 #---------------------------------------------------------------------------------
 
@@ -104,41 +86,3 @@ $(OUTPUT).smdh:
 $(OUTPUT).3dsx:
 	@echo "Building 3dsx.."
 	@3dsxtool $(LOVEPOTION_3DS) $@ --smdh=$(OUTPUT).smdh --romfs=$(ROMFS)
-
-#---------------------------------------------------------------------------------
-# cia targets
-#
-# note: to build as a cia, download bannertool and makerom
-# add the respective OS binary to your path:
-#
-# export makerom=<path/to/makerom>
-# export bannertool=<path/to/bannertool>
-#---------------------------------------------------------------------------------
-cia: banner icon
-	@$(makerom) -f cia \
-	-o $(OUTPUT).cia \
-	-target t \
-	-exefslogo \
-	-elf $(LOVEPOTION_3DS) \
-	-rsf "$(RSF_PATH)" \
-	-banner "$(BUILD)/banner.bnr" \
-	-icon "$(BUILD)/icon.icn" \
-	-DAPP_TITLE="$(APP_TITLE)" \
-	-DAPP_PRODUCT_CODE="$(PRODUCT_CODE)" \
-	-DAPP_UNIQUE_ID="$(UNIQUE_ID)" \
-	-DAPP_ROMFS="$(ROMFS)"
-
-banner:
-	@$(bannertool) makebanner \
-	-i "$(BANNER_IMAGE)" \
-	-a "$(BANNER_AUDIO)" \
-	-o "$(BUILD)/banner.bnr"
-
-icon:
-	@$(bannertool) makesmdh \
-	-s "$(APP_TITLE)" \
-	-l "$(APP_DESCRIPTION)" \
-	-p "$(APP_AUTHOR)" \
-	-i "$(APP_ICON)" \
-	-f "$(ICON_FLAGS)" \
-	-o "$(BUILD)/icon.icn"
