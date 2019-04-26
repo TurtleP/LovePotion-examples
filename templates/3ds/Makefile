@@ -31,23 +31,23 @@ include $(DEVKITARM)/3ds_rules
 # APP_TITLE is the name of the app stored in the .3dsx file (Optional)
 # APP_AUTHOR is the author of the app stored in the .3dsx file (Optional)
 # APP_VERSION is the version of the app stored in the .3dsx file (Optional)
-# APP_TITLEID is the titleID of the app stored in the .3dsx file (Optional)
 # APP_DESCRIPTION is the description of the application
 #
 # ICON is the filename of the icon (.png), relative to the project folder.
 #---------------------------------------------------------------------------------
-TARGET          := $(notdir $(CURDIR))
-BUILD           := $(TOPDIR)
+TARGET			:= $(notdir $(CURDIR))
 
-ROMFS           := game
+BUILD			:= build
+GAME			:= game
 
-APP_TITLE       := Löve Potion
-APP_AUTHOR      := TurtleP
-APP_TITLEID     := 0x1043
-APP_VERSION     := 1.1
-APP_DESCRIPTION := LOVE for 3DS
+APP_TITLE		:= Image & Sound
+APP_AUTHOR		:= TurtleP
+APP_VERSION		:= 1.1
+APP_DESCRIPTION := Löve Potion Demo
 
-ICON            := icon.png
+ICON			:= icon.png
+
+ROMFS			:= $(BUILD)/game
 
 #---------------------------------------------------------------------------------
 # build options
@@ -55,6 +55,10 @@ ICON            := icon.png
 
 export OUTPUT    :=    $(TARGET)
 export TOPDIR    :=    $(CURDIR)
+
+GFXFILES := $(shell find $(GAME) -name '*.png' -o -name '*.jpg')
+
+export ROMFS_T3XFILES	:=	$(patsubst %.png, $(BUILD)/%.t3x, $(GFXFILES))
 
 ifeq ($(strip $(ICON)),)
 	icons := $(wildcard *.png)
@@ -73,11 +77,19 @@ endif
 # main targets
 #---------------------------------------------------------------------------------
 
-all: $(OUTPUT).smdh $(OUTPUT).3dsx
+
+all: raw $(OUTPUT).smdh $(OUTPUT).3dsx
+
+raw: $(BUILD) $(ROMFS_T3XFILES)
 
 clean:
 	@echo clean ...
-	@rm -fr $(TARGET).3dsx $(OUTPUT).smdh $(OUTPUT).cia banner.bnr icon.icn
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh
+
+
+$(BUILD):
+	@mkdir -p $@
+	@cp -r $(GAME) $@
 
 $(OUTPUT).smdh:
 	@echo "Building smdh.."
@@ -86,3 +98,11 @@ $(OUTPUT).smdh:
 $(OUTPUT).3dsx:
 	@echo "Building 3dsx.."
 	@3dsxtool $(LOVEPOTION_3DS) $@ --smdh=$(OUTPUT).smdh --romfs=$(ROMFS)
+
+#---------------------------------------------------------------------------------
+# Create our t3x files
+#---------------------------------------------------------------------------------
+$(BUILD)/%.t3x:
+#---------------------------------------------------------------------------------
+	@tex3ds $*.png --atlas -f rgba8888 -z auto -o $(BUILD)/$*.t3x
+	@rm "$(BUILD)/$*.png"
