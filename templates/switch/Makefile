@@ -45,11 +45,11 @@ BUILD           := $(TOPDIR)
 
 ROMFS           := game
 
-APP_TITLE       := Löve Potion
-APP_AUTHOR      := TurtleP
-APP_TITLEID     := 1043
+APP_TITLE       := Super Game
+APP_AUTHOR      := You
+APP_TITLEID     := 1099
 APP_VERSION     := 1.0
-APP_DESCRIPTION := LOVE for Switch
+APP_DESCRIPTION := Made with Löve Potion
 
 ICON            := icon.jpg
 
