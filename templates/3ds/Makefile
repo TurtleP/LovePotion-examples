@@ -40,10 +40,10 @@ TARGET			:= $(notdir $(CURDIR))
 BUILD			:= build
 GAME			:= game
 
-APP_TITLE		:= Image & Sound
-APP_AUTHOR		:= TurtleP
-APP_VERSION		:= 1.1
-APP_DESCRIPTION := Löve Potion Demo
+APP_TITLE		:= Super Game
+APP_AUTHOR		:= You
+APP_VERSION		:= 1.0
+APP_DESCRIPTION := Made with Löve Potion
 
 ICON			:= icon.png
 
@@ -56,9 +56,9 @@ ROMFS			:= $(BUILD)/game
 export OUTPUT    :=    $(TARGET)
 export TOPDIR    :=    $(CURDIR)
 
-GFXFILES := $(shell find $(GAME) -name '*.png' -o -name '*.jpg')
-
+GFXFILES := $(shell find $(GAME) -name '*.png' -o -name '*.ttf')
 export ROMFS_T3XFILES	:=	$(patsubst %.png, $(BUILD)/%.t3x, $(GFXFILES))
+export ROMFS_BCFNTFILES	:=	$(patsubst %.ttf, $(BUILD)/%.bcfnt, $(GFXFILES))
 
 ifeq ($(strip $(ICON)),)
 	icons := $(wildcard *.png)
@@ -80,7 +80,7 @@ endif
 
 all: raw $(OUTPUT).smdh $(OUTPUT).3dsx
 
-raw: $(BUILD) $(ROMFS_T3XFILES)
+raw: $(BUILD) $(ROMFS_T3XFILES) $(ROMFS_BCFNTFILES)
 
 clean:
 	@echo clean ...
@@ -104,5 +104,14 @@ $(OUTPUT).3dsx:
 #---------------------------------------------------------------------------------
 $(BUILD)/%.t3x:
 #---------------------------------------------------------------------------------
-	@tex3ds $*.png --atlas -f rgba8888 -z auto -o $(BUILD)/$*.t3x
+	@echo "$(notdir $*.png) -> $(notdir $*.t3x)"
+	@tex3ds $*.png -f rgba8888 -z auto -o $(BUILD)/$*.t3x
 	@rm "$(BUILD)/$*.png"
+#---------------------------------------------------------------------------------
+# Create our bcfnt files
+#---------------------------------------------------------------------------------
+$(BUILD)/%.bcfnt:
+#---------------------------------------------------------------------------------
+	@echo "$(notdir $*.ttf) -> $(notdir $*.bcfnt)"
+	@mkbcfnt $*.ttf -o $(BUILD)/$*.bcfnt
+	@rm "$(BUILD)/$*.ttf"

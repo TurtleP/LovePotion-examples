@@ -1,8 +1,19 @@
+# 3DS files
+###############
+*.elf
+*.smdh
+*.3dsx
+
+# Switch files
+###############
 *.elf
 *.nacp
 *.pfs0
 *.nso
 *.nro
-build/
+
+# Misc.
+###############
+**/build/
 *.zip
 .vscode/
